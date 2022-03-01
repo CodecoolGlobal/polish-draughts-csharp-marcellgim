@@ -113,9 +113,5 @@ namespace yes_polish_draughts
                 Fields.GetLength(0) > inputCoordinate.Item1 &&
                 Fields.GetLength(1) > inputCoordinate.Item2;
         }
-        public bool IsInBounds((int x, int y)coords)
-        {
-            return coords.x < Fields.GetLength(0) && coords.y < Fields.GetLength(1);
-        }
     }
 }
