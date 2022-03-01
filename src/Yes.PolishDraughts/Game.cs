@@ -184,7 +184,8 @@ namespace yes_polish_draughts
                 oppenent = 1 - player;
             }
             if (gameBoard.IsInBound((coordinate.Item1-2, coordinate.Item2-2))) {
-                if (gameBoard.Fields[coordinate.Item1-1, coordinate.Item2-1].Color == oppenent &&
+                if (gameBoard.Fields[coordinate.Item1 - 1, coordinate.Item2 - 1] != null &&
+                    gameBoard.Fields[coordinate.Item1-1, coordinate.Item2-1].Color == oppenent &&
                     gameBoard.Fields[coordinate.Item1 - 2, coordinate.Item2 - 2] == null)
                 {
                     result.Add((coordinate.Item1 - 2, coordinate.Item2 - 2));
@@ -192,7 +193,8 @@ namespace yes_polish_draughts
             }
             if (gameBoard.IsInBound((coordinate.Item1 + 2, coordinate.Item2 - 2)))
             {
-                if (gameBoard.Fields[coordinate.Item1 + 1, coordinate.Item2 - 1].Color == oppenent &&
+                if (gameBoard.Fields[coordinate.Item1 + 1, coordinate.Item2 - 1] != null && 
+                    gameBoard.Fields[coordinate.Item1 + 1, coordinate.Item2 - 1].Color == oppenent &&
                     gameBoard.Fields[coordinate.Item1 + 2, coordinate.Item2 - 2] == null)
                 {
                     result.Add((coordinate.Item1 + 2, coordinate.Item2 - 2));
@@ -200,7 +202,8 @@ namespace yes_polish_draughts
             }
             if (gameBoard.IsInBound((coordinate.Item1 - 2, coordinate.Item2 + 2)))
             {
-                if (gameBoard.Fields[coordinate.Item1 - 1, coordinate.Item2 + 1].Color == oppenent &&
+                if (gameBoard.Fields[coordinate.Item1 - 1, coordinate.Item2 + 1] != null && 
+                    gameBoard.Fields[coordinate.Item1 - 1, coordinate.Item2 + 1].Color == oppenent &&
                     gameBoard.Fields[coordinate.Item1 - 2, coordinate.Item2 + 2] == null)
                 {
                     result.Add((coordinate.Item1 - 2, coordinate.Item2 + 2));
@@ -208,7 +211,8 @@ namespace yes_polish_draughts
             }
             if (gameBoard.IsInBound((coordinate.Item1 + 2, coordinate.Item2 + 2)))
             {
-                if (gameBoard.Fields[coordinate.Item1 + 1, coordinate.Item2 + 1].Color == oppenent &&
+                if (gameBoard.Fields[coordinate.Item1 + 1, coordinate.Item2 + 1] != null && 
+                    gameBoard.Fields[coordinate.Item1 + 1, coordinate.Item2 + 1].Color == oppenent &&
                     gameBoard.Fields[coordinate.Item1 + 2, coordinate.Item2 + 2] == null)
                 {
                     result.Add((coordinate.Item1 + 2, coordinate.Item2 + 2));
