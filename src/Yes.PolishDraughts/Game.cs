@@ -101,7 +101,7 @@ namespace yes_polish_draughts
         private bool ValidateMove((int x, int y)validStartPos, (int x, int y)endPos)
         {
             // End position is in bounds
-            if (!gameBoard.IsInBounds(endPos))
+            if (!gameBoard.IsInBound(endPos))
                 return false;
             // All single moves are diagonal
             (int x, int y) moveVector = (validStartPos.x - endPos.x, validStartPos.y - endPos.y);
@@ -159,6 +159,62 @@ namespace yes_polish_draughts
             {
                 return starterSequence;
             }
+        }
+        private bool CanPawnJump(Pawn pawn)
+        {
+            List<(int, int)> possibleJumps = PossibleJumps(pawn.Coordinates);
+            return possibleJumps.Count != 0;
+        }
+        private bool CanPlayerJump(int player)
+        {
+            return false;
+        }
+
+        private List<(int, int)> PossibleJumps((int, int) coordinate)
+        {
+            List<(int, int)> result = new List<(int, int)>();
+            int player;
+            int oppenent;
+            if (gameBoard.Fields[coordinate.Item1, coordinate.Item2] == null) {
+                return result;
+            }
+            else
+            {
+                player = gameBoard.Fields[coordinate.Item1, coordinate.Item2].Color;
+                oppenent = 1 - player;
+            }
+            if (gameBoard.IsInBound((coordinate.Item1-2, coordinate.Item2-2))) {
+                if (gameBoard.Fields[coordinate.Item1-1, coordinate.Item2-1].Color == oppenent &&
+                    gameBoard.Fields[coordinate.Item1 - 2, coordinate.Item2 - 2] == null)
+                {
+                    result.Add((coordinate.Item1 - 2, coordinate.Item2 - 2));
+                }
+            }
+            if (gameBoard.IsInBound((coordinate.Item1 + 2, coordinate.Item2 - 2)))
+            {
+                if (gameBoard.Fields[coordinate.Item1 + 1, coordinate.Item2 - 1].Color == oppenent &&
+                    gameBoard.Fields[coordinate.Item1 + 2, coordinate.Item2 - 2] == null)
+                {
+                    result.Add((coordinate.Item1 + 2, coordinate.Item2 - 2));
+                }
+            }
+            if (gameBoard.IsInBound((coordinate.Item1 - 2, coordinate.Item2 + 2)))
+            {
+                if (gameBoard.Fields[coordinate.Item1 - 1, coordinate.Item2 + 1].Color == oppenent &&
+                    gameBoard.Fields[coordinate.Item1 - 2, coordinate.Item2 + 2] == null)
+                {
+                    result.Add((coordinate.Item1 - 2, coordinate.Item2 + 2));
+                }
+            }
+            if (gameBoard.IsInBound((coordinate.Item1 + 2, coordinate.Item2 + 2)))
+            {
+                if (gameBoard.Fields[coordinate.Item1 + 1, coordinate.Item2 + 1].Color == oppenent &&
+                    gameBoard.Fields[coordinate.Item1 + 2, coordinate.Item2 + 2] == null)
+                {
+                    result.Add((coordinate.Item1 + 2, coordinate.Item2 + 2));
+                }
+            }
+            return result;
         }
     }
 }
