@@ -46,6 +46,8 @@ namespace yes_polish_draughts
                 }
             }
 
+            Console.WriteLine(LongestJumpSequence(new List<(int, int)> { ((int, int))validatedStartCoordinate }))
+
             while (!validEndCoordinate)
             {
                 Console.WriteLine("Enter coordinates where you want to move that piece:");
@@ -134,6 +136,29 @@ namespace yes_polish_draughts
             }
             // Move complies with all rules, return true
             return true;
+        }
+        private List<(int, int)> LongestJumpSequence(List<(int, int)> starterSequence)
+        {
+            (int x, int y) startPosition = starterSequence.Last();
+            List<(int, int)> possibleJumps = PossibleJumps(startPosition);
+            if (possibleJumps.Count > 0)
+            {
+                List<(int, int)>[] runoffSequences = new List<(int, int)>[possibleJumps.Count];
+                for (int i = 0; i < possibleJumps.Count; i++)
+                {
+                    if (!starterSequence.Contains(possibleJumps[i]))
+                    {
+                        List<(int, int)> newSequence = new List<(int, int)>(starterSequence);
+                        newSequence.Add(possibleJumps[i]);
+                        runoffSequences[i] = LongestJumpSequence(newSequence);
+                    }
+                }
+                return runoffSequences.OrderByDescending(sequence => sequence.Count).First(); 
+            }
+            else
+            {
+                return starterSequence;
+            }
         }
     }
 }
