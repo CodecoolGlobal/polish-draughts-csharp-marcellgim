@@ -27,6 +27,9 @@ namespace yes_polish_draughts
         }
         private void Round()
         {
+            Console.Clear();
+            Console.WriteLine(gameBoard);
+            GetCoordinateInput();
             // Change roles
             player = (player + 1) % 2;
             opponent = (opponent + 1) % 2;
@@ -45,7 +48,7 @@ namespace yes_polish_draughts
                 input = Console.ReadLine() ?? String.Empty;
                 if (input.Length >= 2 && Char.IsLetter(input[0]) && int.TryParse(input.Substring(1), out _))
                 {
-                    int coorX = Char.ToLower(input[0]);
+                    int coorX = Char.ToLower(input[0]) - 'a';
                     int coorY = int.Parse(input.Substring(1));
                     coords = (coorX, coorY);
                 }
