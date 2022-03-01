@@ -89,6 +89,10 @@ namespace yes_polish_draughts
 
                     coords = (coorX, coorY);
                 }
+                if (coords == null)
+                {
+                    Console.WriteLine("Invalid coordinate format. Please try again:");
+                }
             } while ( coords == null );
             return ((int, int))coords;
         }
