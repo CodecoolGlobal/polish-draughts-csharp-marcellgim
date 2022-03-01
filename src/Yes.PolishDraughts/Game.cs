@@ -55,17 +55,20 @@ namespace yes_polish_draughts
             } while ( coords == null );
             return ((int, int))coords;
         }
-        private bool ValidateMove((int x, int y)startPos, (int x, int y)endPos)
+        private bool ValidateMove((int x, int y)validStartPos, (int x, int y)endPos)
         {
-            (int x, int y) moveVector = (startPos.x - endPos.x, startPos.y - endPos.y);
+            // End position is in bounds
+            if (!gameBoard.IsInBounds(endPos))
+                return false;
             // All single moves are diagonal
+            (int x, int y) moveVector = (validStartPos.x - endPos.x, validStartPos.y - endPos.y);
             if (Math.Abs(moveVector.x) != Math.Abs(moveVector.y))
                 return false;
             // Pawn cannot move to an already occupied field
             if (gameBoard.Fields[endPos.x, endPos.y] != null)
                 return false;
             // Uncrowned pieces cannot move more than 2 spaces vertically
-            Pawn piece = gameBoard.Fields[startPos.x, startPos.y];
+            Pawn piece = gameBoard.Fields[validStartPos.x, validStartPos.y];
             if (!piece.IsCrowned && Math.Abs(moveVector.x) > 2)
                 return false;
             // Uncrowned pieces can only move forward
@@ -79,7 +82,7 @@ namespace yes_polish_draughts
             bool pieceTraversed = false;
             for (int moved = 1; moved < moveVector.x; moved++)
             {
-                Pawn? targetField = gameBoard.Fields[startPos.x + moved * unitVector.x, startPos.y + moved * unitVector.y];
+                Pawn? targetField = gameBoard.Fields[validStartPos.x + moved * unitVector.x, validStartPos.y + moved * unitVector.y];
                 if (targetField != null)
                 {
                     if (targetField.Color == player || pieceTraversed)
