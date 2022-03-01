@@ -46,7 +46,8 @@ namespace yes_polish_draughts
                 }
             }
 
-            Console.WriteLine(LongestJumpSequence(new List<(int, int)> { ((int, int))validatedStartCoordinate }))
+            List<(int, int)> test = LongestJumpSequence(new List<(int, int)>() { ((int, int))validatedStartCoordinate });
+            Console.WriteLine(test);
 
             while (!validEndCoordinate)
             {
@@ -153,7 +154,10 @@ namespace yes_polish_draughts
                         runoffSequences[i] = LongestJumpSequence(newSequence);
                     }
                 }
-                return runoffSequences.OrderByDescending(sequence => sequence.Count).First(); 
+                if (Array.TrueForAll(runoffSequences, sequence => sequence != null))
+                    return runoffSequences.OrderByDescending(sequence => sequence.Count).First();
+                else
+                    return starterSequence;
             }
             else
             {
@@ -173,19 +177,10 @@ namespace yes_polish_draughts
         private List<(int, int)> PossibleJumps((int, int) coordinate)
         {
             List<(int, int)> result = new List<(int, int)>();
-            int player;
-            int oppenent;
-            if (gameBoard.Fields[coordinate.Item1, coordinate.Item2] == null) {
-                return result;
-            }
-            else
-            {
-                player = gameBoard.Fields[coordinate.Item1, coordinate.Item2].Color;
-                oppenent = 1 - player;
-            }
+
             if (gameBoard.IsInBound((coordinate.Item1-2, coordinate.Item2-2))) {
                 if (gameBoard.Fields[coordinate.Item1 - 1, coordinate.Item2 - 1] != null &&
-                    gameBoard.Fields[coordinate.Item1-1, coordinate.Item2-1].Color == oppenent &&
+                    gameBoard.Fields[coordinate.Item1-1, coordinate.Item2-1].Color == opponent &&
                     gameBoard.Fields[coordinate.Item1 - 2, coordinate.Item2 - 2] == null)
                 {
                     result.Add((coordinate.Item1 - 2, coordinate.Item2 - 2));
@@ -194,7 +189,7 @@ namespace yes_polish_draughts
             if (gameBoard.IsInBound((coordinate.Item1 + 2, coordinate.Item2 - 2)))
             {
                 if (gameBoard.Fields[coordinate.Item1 + 1, coordinate.Item2 - 1] != null && 
-                    gameBoard.Fields[coordinate.Item1 + 1, coordinate.Item2 - 1].Color == oppenent &&
+                    gameBoard.Fields[coordinate.Item1 + 1, coordinate.Item2 - 1].Color == opponent &&
                     gameBoard.Fields[coordinate.Item1 + 2, coordinate.Item2 - 2] == null)
                 {
                     result.Add((coordinate.Item1 + 2, coordinate.Item2 - 2));
@@ -203,7 +198,7 @@ namespace yes_polish_draughts
             if (gameBoard.IsInBound((coordinate.Item1 - 2, coordinate.Item2 + 2)))
             {
                 if (gameBoard.Fields[coordinate.Item1 - 1, coordinate.Item2 + 1] != null && 
-                    gameBoard.Fields[coordinate.Item1 - 1, coordinate.Item2 + 1].Color == oppenent &&
+                    gameBoard.Fields[coordinate.Item1 - 1, coordinate.Item2 + 1].Color == opponent &&
                     gameBoard.Fields[coordinate.Item1 - 2, coordinate.Item2 + 2] == null)
                 {
                     result.Add((coordinate.Item1 - 2, coordinate.Item2 + 2));
@@ -212,7 +207,7 @@ namespace yes_polish_draughts
             if (gameBoard.IsInBound((coordinate.Item1 + 2, coordinate.Item2 + 2)))
             {
                 if (gameBoard.Fields[coordinate.Item1 + 1, coordinate.Item2 + 1] != null && 
-                    gameBoard.Fields[coordinate.Item1 + 1, coordinate.Item2 + 1].Color == oppenent &&
+                    gameBoard.Fields[coordinate.Item1 + 1, coordinate.Item2 + 1].Color == opponent &&
                     gameBoard.Fields[coordinate.Item1 + 2, coordinate.Item2 + 2] == null)
                 {
                     result.Add((coordinate.Item1 + 2, coordinate.Item2 + 2));
