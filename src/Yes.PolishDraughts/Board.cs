@@ -8,7 +8,7 @@ namespace yes_polish_draughts
 {
     internal class Board
     {
-        public Pawn[,] Fields { get; set; }
+        public Pawn?[,] Fields { get; set; }
         public Board(int size)
         {
             Fields = CreateBoard(size);
@@ -60,12 +60,10 @@ namespace yes_polish_draughts
                 for (int col = 0; col < Fields.GetLength(1); col++)
                 {
                     boardString += "| ";
-                    if (Fields[row, col] == null)
+                    if (Fields[row, col] != null)
                     {
-                        boardString += ".";
-                    }
-                    else
-                    {
+
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                         if (Fields[row, col].Color == 0)
                         {
                             boardString += "X";
@@ -74,6 +72,11 @@ namespace yes_polish_draughts
                         {
                             boardString += "O";
                         }
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+                    }
+                    else
+                    {
+                        boardString += ".";
                     }
                     boardString += " ";
                 }
@@ -89,11 +92,26 @@ namespace yes_polish_draughts
         {
             Fields[position.Item1, position.Item2] = null;
         }
-        public void MovePawn((int, int) startPosition, (int, int) endPosition)
+        public void MovePawn((int?, int?) startPosition, (int?, int?) endPosition)
         {
-            Pawn movedPawn = Fields[startPosition.Item1, startPosition.Item2];
-            Fields[startPosition.Item1, startPosition.Item2] = null;
-            Fields[endPosition.Item1, endPosition.Item2] = movedPawn;
+            if (startPosition.Item1 != null && startPosition.Item2 != null && endPosition.Item1 != null && endPosition.Item2 != null)
+            {
+                (int, int) startPos = ((int)startPosition.Item1, (int)startPosition.Item2);
+                (int, int) endPos = ((int)endPosition.Item1, (int)endPosition.Item2);
+                if (Fields[startPos.Item1, startPos.Item2] != null)
+                {
+                    Pawn? movedPawn = Fields[startPos.Item1, startPos.Item2];
+                    Fields[startPos.Item1, startPos.Item2] = null;
+                    Fields[endPos.Item1, endPos.Item2] = movedPawn;
+                }
+            }
+        }
+        public bool IsInBound((int, int)inputCoordinate)
+        {
+            return inputCoordinate.Item1 >= 0 &&
+                inputCoordinate.Item2 >= 0 &&
+                Fields.GetLength(0) > inputCoordinate.Item1 &&
+                Fields.GetLength(1) > inputCoordinate.Item2;
         }
         public bool IsInBounds((int x, int y)coords)
         {
