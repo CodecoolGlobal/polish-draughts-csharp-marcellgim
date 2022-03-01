@@ -48,8 +48,8 @@ namespace yes_polish_draughts
                 input = Console.ReadLine() ?? String.Empty;
                 if (input.Length >= 2 && Char.IsLetter(input[0]) && int.TryParse(input.Substring(1), out _))
                 {
-                    int coorX = Char.ToLower(input[0]) - 'a';
-                    int coorY = int.Parse(input.Substring(1));
+                    int coorY = Char.ToLower(input[0]) - 'a';
+                    int coorX = int.Parse(input.Substring(1));
                     coords = (coorX, coorY);
                 }
             } while ( coords == null );
