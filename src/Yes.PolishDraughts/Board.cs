@@ -95,5 +95,9 @@ namespace yes_polish_draughts
             Fields[startPosition.Item1, startPosition.Item2] = null;
             Fields[endPosition.Item1, endPosition.Item2] = movedPawn;
         }
+        public bool IsInBounds((int x, int y)coords)
+        {
+            return coords.x < Fields.GetLength(0) && coords.y < Fields.GetLength(1);
+        }
     }
 }
