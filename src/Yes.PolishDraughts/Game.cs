@@ -50,7 +50,7 @@ namespace yes_polish_draughts
             {
                 Console.WriteLine("Enter coordinates where you want to move that piece:");
                 (int, int) inputCoordinate = GetCoordinateInput();
-                validEndCoordinate = ValidateMove(validatedStartCoordinate, inputCoordinate);
+                validEndCoordinate = ValidateMove(((int, int))validatedStartCoordinate, inputCoordinate);
                 if (validEndCoordinate)
                 {
                     validatedEndCoordinate = inputCoordinate;
