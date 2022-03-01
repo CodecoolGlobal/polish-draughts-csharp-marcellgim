@@ -39,12 +39,15 @@ namespace yes_polish_draughts
         }
         public override string ToString()
         {
-            string boardString = "  ";
+            string boardString = "   ";
             char[] alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
             for (int col = 0; col < Fields.GetLength(1); col++)
             {
-                boardString += $" {alpha[col].ToString()}";
+                boardString += $"  {alpha[col].ToString()} ";
             }
+            boardString += "\n";
+            boardString += "   ";
+            boardString += new string('-', (Fields.GetLength(1) * 4) + 1);
             boardString += "\n";
             for (int row = 0; row < Fields.GetLength(0); row++)
             {
@@ -56,25 +59,41 @@ namespace yes_polish_draughts
                 }
                 for (int col = 0; col < Fields.GetLength(1); col++)
                 {
+                    boardString += "| ";
                     if (Fields[row, col] == null)
                     {
-                        boardString += "  ";
+                        boardString += ".";
                     }
                     else
                     {
                         if (Fields[row, col].Color == 0)
                         {
-                            boardString += "><";
+                            boardString += "X";
                         }
                         if (Fields[row, col].Color == 1)
                         {
-                            boardString += "()";
+                            boardString += "O";
                         }
                     }
+                    boardString += " ";
                 }
+                boardString += "|";
+                boardString += "\n";
+                boardString += "   ";
+                boardString += new string('-', (Fields.GetLength(1)*4)+1);
                 boardString += "\n";
             }
             return boardString;
+        }
+        public void RemovePawn((int, int) position)
+        {
+            Fields[position.Item1, position.Item2] = null;
+        }
+        public void MovePawn((int, int) startPosition, (int, int) endPosition)
+        {
+            Pawn movedPawn = Fields[startPosition.Item1, startPosition.Item2];
+            Fields[startPosition.Item1, startPosition.Item2] = null;
+            Fields[endPosition.Item1, endPosition.Item2] = movedPawn;
         }
     }
 }
