@@ -36,18 +36,19 @@ namespace yes_polish_draughts
             Pawn? movedPawn = null;
             Console.Clear();
             Console.WriteLine(gameBoard);
-            List<List<(int x, int y)>> possibleSequences;
+
+            List<(int, int)> possibleStarts;
+            List<List<(int x, int y)>> possibleJumps = PossibleJumpMoves();
 
             if (CanPlayerJump(player))
             {
-                possibleSequences = PossibleJumpMoves();
+                possibleStarts = StartPositionCoords(possibleJumps);
             }
             else
             {
-                possibleSequences = AllPawnMoves(player);
+                possibleStarts = AllMoveablePawnCoordinates();
             }
 
-            List<(int,int)> possibleStarts = StartPositionCoords(possibleSequences);
             Console.WriteLine("You can move the following pawns:");
             OutputCoords(possibleStarts);
 
@@ -258,18 +259,18 @@ namespace yes_polish_draughts
             }
             return false;
         }
-        private List<List<(int, int)>> AllPawnMoves(int player)
+        private List<(int, int)> AllMoveablePawnCoordinates()
         {
             List<Pawn> playerPawns = gameBoard.Pawns[player];
-            var allMoves = new List<List<(int, int)>>();
+            var allMoveables = new List<(int, int)>();
             foreach (Pawn pawn in playerPawns)
             {
                 if (CanPawnMove(pawn))
                 {
-                    allMoves.Add(PossibleMoves(pawn));
+                    allMoveables.Add(pawn.Coordinates);
                 }
             }
-            return allMoves;
+            return allMoveables;
         }
 
         private List<(int, int)> PossibleJumps((int x, int y) coordinate)
@@ -299,8 +300,8 @@ namespace yes_polish_draughts
             string outputString = "";
             foreach ((int x, int y) coordinate in coordinates)
             {
-                outputString += (char)(coordinate.x + 'a');
-                outputString += coordinate.y + 1;
+                outputString += (char)(coordinate.y + 'a');
+                outputString += coordinate.x + 1;
                 outputString += " ";
             }
             Console.WriteLine(outputString);
