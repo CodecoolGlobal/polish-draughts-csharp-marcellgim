@@ -123,6 +123,8 @@ namespace yes_polish_draughts
             {
                 
                 input = Console.ReadLine() ?? String.Empty;
+                if (input.ToLower() == "quit")
+                    Environment.Exit(0);
                 if (input.Length >= 2 && Char.IsLetter(input[0]) && int.TryParse(input.Substring(1), out _))
                 {
                     int coorY = Char.ToLower(input[0]) - 'a';
