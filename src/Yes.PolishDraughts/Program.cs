@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace yes_polish_draughts
 {
@@ -6,7 +7,7 @@ namespace yes_polish_draughts
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.OutputEncoding = Encoding.UTF8;
             var game = new Game();
             game.Start();
         }
