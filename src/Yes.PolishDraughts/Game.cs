@@ -78,7 +78,9 @@ namespace yes_polish_draughts
             }
             else
             {
+#pragma warning disable CS8604 // Possible null reference argument.
                 possibleEnds = PossibleMoves(movedPawn);
+#pragma warning restore CS8604 // Possible null reference argument.
                 Console.WriteLine("You can move this pawn to:");
                 OutputCoords(possibleEnds);
             }
@@ -92,7 +94,9 @@ namespace yes_polish_draughts
                     validEndCoordinate = true;
                     validatedEndCoordinate = inputCoordinate;
                     if (!forceJump)
+#pragma warning disable CS8604 // Possible null reference argument.
                         gameBoard.MovePawn(movedPawn, validatedEndCoordinate);
+#pragma warning restore CS8604 // Possible null reference argument.
                     else
                     {
                         var chosenSequence =
@@ -283,12 +287,18 @@ namespace yes_polish_draughts
         }
         private void ExecuteJumpSequence(List<(int x, int y)> jumpSequence)
         {
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
             Pawn movedPawn = gameBoard.Fields[jumpSequence[0].x, jumpSequence[0].y];
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
             jumpSequence.RemoveAt(0);
             foreach ((int x, int y) jump in jumpSequence)
             {
 
+#pragma warning disable IDE0042 // Deconstruct variable declaration
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 (int x, int y) moveVector = (jump.x - movedPawn.Coordinates.x, jump.y - movedPawn.Coordinates.y);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore IDE0042 // Deconstruct variable declaration
                 (int x, int y)unitVector = (moveVector.x / Math.Abs(moveVector.x), moveVector.y / Math.Abs(moveVector.y));
                 // Since all moves are perfectly diagonal, any dimension can be used to determine jump length
                 int jumpLength = Math.Abs(moveVector.x);
@@ -298,7 +308,9 @@ namespace yes_polish_draughts
                                                 movedPawn.Coordinates.y + (unitVector.y * move));
                     if (gameBoard.Fields[currentField.x, currentField.y] is Pawn)
                     {
+#pragma warning disable CS8604 // Possible null reference argument.
                         gameBoard.RemovePawn(gameBoard.Fields[currentField.x, currentField.y]);
+#pragma warning restore CS8604 // Possible null reference argument.
                         break;
                     }
                 }
