@@ -93,21 +93,20 @@ namespace yes_polish_draughts
             }
             return boardString;
         }
-        public void RemovePawn((int, int) position)
+        public void RemovePawn(Pawn movedPawn)
         {
-            Fields[position.Item1, position.Item2] = null;
+            Fields[movedPawn.Coordinates.x, movedPawn.Coordinates.y] = null;
         }
-        public void MovePawn((int?, int?) startPosition, (int?, int?) endPosition)
+        public void MovePawn(Pawn movedPawn, (int? x , int? y) endPosition)
         {
-            if (startPosition.Item1 != null && startPosition.Item2 != null && endPosition.Item1 != null && endPosition.Item2 != null)
+            if (endPosition.Item1 != null && endPosition.Item2 != null)
             {
-                (int, int) startPos = ((int)startPosition.Item1, (int)startPosition.Item2);
-                (int, int) endPos = ((int)endPosition.Item1, (int)endPosition.Item2);
+                (int x, int y) startPos = movedPawn.Coordinates;
+                (int x, int y) endPos = ((int)endPosition.x, (int)endPosition.y);
                 if (Fields[startPos.Item1, startPos.Item2] != null)
                 {
-                    Pawn? movedPawn = Fields[startPos.Item1, startPos.Item2];
-                    Fields[startPos.Item1, startPos.Item2] = null;
-                    Fields[endPos.Item1, endPos.Item2] = movedPawn;
+                    Fields[startPos.x, startPos.y] = null;
+                    Fields[endPos.x, endPos.y] = movedPawn;
                 }
             }
         }
