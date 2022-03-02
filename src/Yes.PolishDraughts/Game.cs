@@ -203,5 +203,29 @@ namespace yes_polish_draughts
             }
             return result;
         }
+        private void ExecuteJumpSequence(List<(int x, int y)> jumpSequence)
+        {
+            Pawn movedPawn = gameBoard.Fields[jumpSequence[0].x, jumpSequence[0].y];
+            jumpSequence.RemoveAt(0);
+            foreach ((int x, int y) jump in jumpSequence)
+            {
+                gameBoard.MovePawn(movedPawn, jump);
+
+                (int x, int y) moveVector = (jump.x - movedPawn.Coordinates.x, jump.y - movedPawn.Coordinates.y);
+                (int x, int y)unitVector = (moveVector.x / Math.Abs(moveVector.x), moveVector.y / Math.Abs(moveVector.y));
+                // Since all moves are perfectly diagonal, any dimension can be used to determine jump length
+                int jumpLength = Math.Abs(moveVector.x);
+                for (int move = 1; move < jumpLength; move++)
+                {
+                    (int x, int y) currentField = (movedPawn.Coordinates.x + (unitVector.x * move),
+                                                movedPawn.Coordinates.y + (unitVector.y * move));
+                    if (gameBoard.Fields[currentField.x, currentField.y] is Pawn)
+                    {
+                        gameBoard.RemovePawn(gameBoard.Fields[currentField.x, currentField.y]);
+                        break;
+                    }
+                }
+            }
+        }
     }
 }
