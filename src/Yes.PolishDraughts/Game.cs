@@ -182,43 +182,23 @@ namespace yes_polish_draughts
             return false;
         }
 
-        private List<(int, int)> PossibleJumps((int, int) coordinate)
+        private List<(int, int)> PossibleJumps((int x, int y) coordinate)
         {
             List<(int, int)> result = new List<(int, int)>();
-
-            if (gameBoard.IsInBound((coordinate.Item1-2, coordinate.Item2-2))) {
-                if (gameBoard.Fields[coordinate.Item1 - 1, coordinate.Item2 - 1] != null &&
-                    gameBoard.Fields[coordinate.Item1-1, coordinate.Item2-1].Color == opponent &&
-                    gameBoard.Fields[coordinate.Item1 - 2, coordinate.Item2 - 2] == null)
-                {
-                    result.Add((coordinate.Item1 - 2, coordinate.Item2 - 2));
-                }
-            }
-            if (gameBoard.IsInBound((coordinate.Item1 + 2, coordinate.Item2 - 2)))
+            (int, int)[] possibleCoords = { (-2, -2), (2, -2), (-2, 2), (2, 2)};
+            foreach ((int row, int col) possibleCoord in possibleCoords)
             {
-                if (gameBoard.Fields[coordinate.Item1 + 1, coordinate.Item2 - 1] != null && 
-                    gameBoard.Fields[coordinate.Item1 + 1, coordinate.Item2 - 1].Color == opponent &&
-                    gameBoard.Fields[coordinate.Item1 + 2, coordinate.Item2 - 2] == null)
-                {
-                    result.Add((coordinate.Item1 + 2, coordinate.Item2 - 2));
-                }
-            }
-            if (gameBoard.IsInBound((coordinate.Item1 - 2, coordinate.Item2 + 2)))
-            {
-                if (gameBoard.Fields[coordinate.Item1 - 1, coordinate.Item2 + 1] != null && 
-                    gameBoard.Fields[coordinate.Item1 - 1, coordinate.Item2 + 1].Color == opponent &&
-                    gameBoard.Fields[coordinate.Item1 - 2, coordinate.Item2 + 2] == null)
-                {
-                    result.Add((coordinate.Item1 - 2, coordinate.Item2 + 2));
-                }
-            }
-            if (gameBoard.IsInBound((coordinate.Item1 + 2, coordinate.Item2 + 2)))
-            {
-                if (gameBoard.Fields[coordinate.Item1 + 1, coordinate.Item2 + 1] != null && 
-                    gameBoard.Fields[coordinate.Item1 + 1, coordinate.Item2 + 1].Color == opponent &&
-                    gameBoard.Fields[coordinate.Item1 + 2, coordinate.Item2 + 2] == null)
-                {
-                    result.Add((coordinate.Item1 + 2, coordinate.Item2 + 2));
+                (int, int) newCoord = (coordinate.x + possibleCoord.row, coordinate.y + possibleCoord.col);
+                (int, int) newJumpedCoord = (coordinate.x + (possibleCoord.row / 2), coordinate.y + (possibleCoord.col / 2));
+                Pawn? newjumpedField = gameBoard.Fields[newJumpedCoord.Item1, newJumpedCoord.Item2];
+                Pawn? newField = gameBoard.Fields[newCoord.Item1, newCoord.Item2];
+                if (gameBoard.IsInBound(newCoord)) {
+                    if (newjumpedField != null &&
+                        newjumpedField.Color == opponent &&
+                        newField == null)
+                    {
+                        result.Add(newCoord);
+                    }
                 }
             }
             return result;
