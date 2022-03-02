@@ -51,8 +51,12 @@ namespace yes_polish_draughts
                 boardString += $"  {alpha[col].ToString()} ";
             }
             boardString += "\n";
-            boardString += "   ";
-            boardString += new string('-', (Fields.GetLength(1) * 4) + 1);
+            boardString += "   ┌";
+            for (int i = 0; i < Fields.GetLength(1)-1; i++)
+            {
+                boardString += "───┬";
+            }
+            boardString += "───┐";
             boardString += "\n";
             for (int row = 0; row < Fields.GetLength(0); row++)
             {
@@ -64,18 +68,18 @@ namespace yes_polish_draughts
                 }
                 for (int col = 0; col < Fields.GetLength(1); col++)
                 {
-                    boardString += "| ";
+                    boardString += "│ ";
                     if (Fields[row, col] != null)
                     {
 
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
                         if (Fields[row, col].Color == 0)
                         {
-                            boardString += "X";
+                            boardString += "●";
                         }
                         if (Fields[row, col].Color == 1)
                         {
-                            boardString += "O";
+                            boardString += "○";
                         }
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                     }
@@ -85,12 +89,27 @@ namespace yes_polish_draughts
                     }
                     boardString += " ";
                 }
-                boardString += "|";
+                boardString += "│";
                 boardString += "\n";
                 boardString += "   ";
-                boardString += new string('-', (Fields.GetLength(1)*4)+1);
-                boardString += "\n";
+                
+                if (row < Fields.GetLength(0)-1)
+                {
+                    boardString += "├";
+                    for (int i = 0; i < Fields.GetLength(1) - 1; i++)
+                    {
+                        boardString += "───┼";
+                    }
+                    boardString += "───┤";
+                    boardString += "\n";
+                }
             }
+            boardString += "└";
+            for (int i = 0; i < Fields.GetLength(1) - 1; i++)
+            {
+                boardString += "───┴";
+            }
+            boardString += "───┘";
             return boardString;
         }
         public void RemovePawn(Pawn movedPawn)
