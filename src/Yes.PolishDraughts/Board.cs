@@ -9,7 +9,7 @@ namespace yes_polish_draughts
     internal class Board
     {
         public Pawn?[,] Fields { get; set; }
-        public List<Pawn>[] Pawns { get; set; } = new List<Pawn>[2];
+        public List<Pawn>[] Pawns { get; set; } = new List<Pawn>[2] { new List<Pawn>(), new List<Pawn>() };
         public Board(int size)
         {
             Fields = CreateBoard(size);
@@ -107,6 +107,7 @@ namespace yes_polish_draughts
                 {
                     Fields[startPos.x, startPos.y] = null;
                     Fields[endPos.x, endPos.y] = movedPawn;
+                    movedPawn.Coordinates = endPos;
                 }
             }
         }
