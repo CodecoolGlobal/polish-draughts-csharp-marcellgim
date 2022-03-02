@@ -9,7 +9,7 @@ namespace yes_polish_draughts
     internal class Board
     {
         public Pawn?[,] Fields { get; set; }
-        public List<Pawn> Pawns { get; set; }
+        public List<Pawn>[] Pawns { get; set; } = new List<Pawn>[2];
         public Board(int size)
         {
             Fields = CreateBoard(size);
@@ -28,13 +28,13 @@ namespace yes_polish_draughts
                         {
                             Pawn newPawn = new Pawn(1, (row, col));
                             board[row, col] = newPawn;
-                            Pawns.Add(newPawn);
+                            Pawns[1].Add(newPawn);
                         }
                         else if (row >= size - 4)
                         {
                             Pawn newPawn = new Pawn(0, (row, col));
                             board[row, col] = newPawn;
-                            Pawns.Add(newPawn);
+                            Pawns[0].Add(newPawn);
                         }
                     }
 
@@ -116,18 +116,6 @@ namespace yes_polish_draughts
                 inputCoordinate.Item2 >= 0 &&
                 Fields.GetLength(0) > inputCoordinate.Item1 &&
                 Fields.GetLength(1) > inputCoordinate.Item2;
-        }
-        public List<Pawn> GetPlayerPawns (int player)
-        {
-            var result = new List<Pawn>();
-            foreach (Pawn pawn in Pawns)
-            {
-                if (pawn.Color == player)
-                {
-                    result.Add(pawn);
-                }
-            }
-            return result;
         }
     }
 }

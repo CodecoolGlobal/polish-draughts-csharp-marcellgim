@@ -171,7 +171,7 @@ namespace yes_polish_draughts
         }
         private bool CanPlayerJump(int player)
         {
-            List<Pawn> playerPawns = gameBoard.GetPlayerPawns(player);
+            List<Pawn> playerPawns = gameBoard.Pawns[player];
             foreach ( Pawn pawn in playerPawns)
             {
                 if (CanPawnJump(pawn))
