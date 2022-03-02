@@ -40,7 +40,7 @@ namespace yes_polish_draughts
             List<(int, int)> possibleStarts;
             List<(int, int)> possibleEnds;
             List<List<(int x, int y)>> possibleJumps = PossibleJumpMoves();
-            bool forceJump = CanPlayerJump(player);
+            bool forceJump = CanPlayerJump();
 
             if (forceJump)
             {
@@ -109,7 +109,7 @@ namespace yes_polish_draughts
         }
         private bool CheckForWinner()
         {
-            return false;
+            return !CanPlayerJump() && !CanPlayerMove();
         }
         private (int, int) GetCoordinateInput()
         {
@@ -190,7 +190,7 @@ namespace yes_polish_draughts
             }
             return result;
         }
-        private bool CanPlayerJump(int player)
+        private bool CanPlayerJump()
         {
             List<Pawn> playerPawns = gameBoard.Pawns[player];
             foreach ( Pawn pawn in playerPawns)
@@ -202,7 +202,7 @@ namespace yes_polish_draughts
             }
             return false;
         }
-        private bool CanPlayerMove(int player)
+        private bool CanPlayerMove()
         {
             List<Pawn> playerPawns = gameBoard.Pawns[player];
             foreach (Pawn pawn in playerPawns)
