@@ -31,16 +31,18 @@ namespace yes_polish_draughts
         {
             bool validStartCoordinate = false;
             bool validEndCoordinate = false;
-            (int x, int y) validatedStartCoordinate;
-            (int x, int y) validatedEndCoordinate;
+            (int x, int y) validatedStartCoordinate = (-1, -1);
+            (int x, int y) validatedEndCoordinate = (-1, -1);
             Pawn? movedPawn = null;
             Console.Clear();
             Console.WriteLine(gameBoard);
 
             List<(int, int)> possibleStarts;
+            List<(int, int)> possibleEnds;
             List<List<(int x, int y)>> possibleJumps = PossibleJumpMoves();
+            bool forceJump = CanPlayerJump(player);
 
-            if (CanPlayerJump(player))
+            if (forceJump)
             {
                 possibleStarts = StartPositionCoords(possibleJumps);
             }
@@ -65,15 +67,40 @@ namespace yes_polish_draughts
             }
 
 
+            if (forceJump)
+            {
+                possibleEnds = 
+                    (from sequence in possibleJumps
+                    where sequence.First() == validatedStartCoordinate
+                    select sequence.Last()).ToList();
+                Console.WriteLine("You can jump with this pawn to:");
+                OutputCoords(possibleEnds);
+            }
+            else
+            {
+                possibleEnds = PossibleMoves(movedPawn);
+                Console.WriteLine("You can move this pawn to:");
+                OutputCoords(possibleEnds);
+            }
+
             while (!validEndCoordinate)
             {
                 Console.WriteLine("Enter coordinates where you want to move that piece:");
                 (int, int) inputCoordinate = GetCoordinateInput();
-                validEndCoordinate = ValidateMove(movedPawn.Coordinates, inputCoordinate);
-                if (validEndCoordinate)
+                if (possibleEnds.Contains(inputCoordinate))
                 {
+                    validEndCoordinate = true;
                     validatedEndCoordinate = inputCoordinate;
-                    gameBoard.MovePawn(movedPawn, validatedEndCoordinate);
+                    if (!forceJump)
+                        gameBoard.MovePawn(movedPawn, validatedEndCoordinate);
+                    else
+                    {
+                        var chosenSequence =
+                            (from sequence in possibleJumps
+                            where sequence.Last() == validatedEndCoordinate
+                            select sequence).Single().ToList();
+                        ExecuteJumpSequence(chosenSequence);
+                    }
                 }
             }
             // Change roles
@@ -332,7 +359,6 @@ namespace yes_polish_draughts
             jumpSequence.RemoveAt(0);
             foreach ((int x, int y) jump in jumpSequence)
             {
-                gameBoard.MovePawn(movedPawn, jump);
 
                 (int x, int y) moveVector = (jump.x - movedPawn.Coordinates.x, jump.y - movedPawn.Coordinates.y);
                 (int x, int y)unitVector = (moveVector.x / Math.Abs(moveVector.x), moveVector.y / Math.Abs(moveVector.y));
@@ -348,6 +374,7 @@ namespace yes_polish_draughts
                         break;
                     }
                 }
+                gameBoard.MovePawn(movedPawn, jump);
             }
         }
         private List<List<(int x, int y)>> PossibleJumpMoves()
