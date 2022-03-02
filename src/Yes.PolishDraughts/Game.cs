@@ -31,10 +31,17 @@ namespace yes_polish_draughts
         {
             bool validStartCoordinate = false;
             bool validEndCoordinate = false;
-            (int?, int?) validatedStartCoordinate = (null, null);
-            (int?, int?) validatedEndCoordinate = (null, null);
+            (int x, int y) validatedStartCoordinate;
+            (int x, int y) validatedEndCoordinate;
+            Pawn? movedPawn = null;
             Console.Clear();
             Console.WriteLine(gameBoard);
+
+            if (CanPlayerJump(player))
+            {
+                List<List<(int, int)>> possibleSeqences = PossibleJumpMoves();
+            }
+            
             while (!validStartCoordinate)
             {
                 Console.WriteLine("Enter coordinates for the piece you want to move:");
@@ -43,23 +50,22 @@ namespace yes_polish_draughts
                 if (validStartCoordinate)
                 {
                     validatedStartCoordinate = inputCoordinate;
+                    movedPawn = gameBoard.Fields[validatedStartCoordinate.x, validatedStartCoordinate.y];
                 }
             }
 
-            List<(int, int)> test = LongestJumpSequence(new List<(int, int)>() { ((int, int))validatedStartCoordinate });
-            Console.WriteLine(test);
 
             while (!validEndCoordinate)
             {
                 Console.WriteLine("Enter coordinates where you want to move that piece:");
                 (int, int) inputCoordinate = GetCoordinateInput();
-                validEndCoordinate = ValidateMove(((int, int))validatedStartCoordinate, inputCoordinate);
+                validEndCoordinate = ValidateMove(movedPawn.Coordinates, inputCoordinate);
                 if (validEndCoordinate)
                 {
                     validatedEndCoordinate = inputCoordinate;
+                    gameBoard.MovePawn(movedPawn, validatedEndCoordinate);
                 }
             }
-            gameBoard.MovePawn(validatedStartCoordinate, validatedEndCoordinate);
             // Change roles
             player = (player + 1) % 2;
             opponent = (opponent + 1) % 2;
@@ -221,7 +227,7 @@ namespace yes_polish_draughts
         }
         private bool CanPlayerJump(int player)
         {
-            List<Pawn> playerPawns = gameBoard.GetPlayerPawns(player);
+            List<Pawn> playerPawns = gameBoard.Pawns[player];
             foreach ( Pawn pawn in playerPawns)
             {
                 if (CanPawnJump(pawn))
@@ -240,9 +246,9 @@ namespace yes_polish_draughts
             {
                 (int, int) newCoord = (coordinate.x + possibleCoord.row, coordinate.y + possibleCoord.col);
                 (int, int) newJumpedCoord = (coordinate.x + (possibleCoord.row / 2), coordinate.y + (possibleCoord.col / 2));
-                Pawn? newjumpedField = gameBoard.Fields[newJumpedCoord.Item1, newJumpedCoord.Item2];
-                Pawn? newField = gameBoard.Fields[newCoord.Item1, newCoord.Item2];
                 if (gameBoard.IsInBound(newCoord)) {
+                    Pawn? newjumpedField = gameBoard.Fields[newJumpedCoord.Item1, newJumpedCoord.Item2];
+                    Pawn? newField = gameBoard.Fields[newCoord.Item1, newCoord.Item2];
                     if (newjumpedField != null &&
                         newjumpedField.Color == opponent &&
                         newField == null)
@@ -308,6 +314,22 @@ namespace yes_polish_draughts
                     }
                 }
             }
+        }
+        private List<List<(int x, int y)>> PossibleJumpMoves()
+        {
+            List<List<(int, int)>> longestSequences = new List<List<(int, int)>>();
+            foreach (Pawn pawn in gameBoard.Pawns[player])
+            {
+                if (CanPawnJump(pawn))
+                {
+                    longestSequences.Add(LongestJumpSequence(new List<(int, int)> { (pawn.Coordinates.x, pawn.Coordinates.y) }));
+                }
+            }
+            var validMoves =
+                    (from sequence in longestSequences
+                    where sequence.Count == longestSequences.Max(sequence => sequence.Count)
+                    select sequence).ToList();
+            return validMoves;
         }
     }
 }
