@@ -68,10 +68,34 @@ namespace yes_polish_draughts
         private bool ValidateStartCoordinate((int, int) inputCoordinate, int player)
         {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-            return gameBoard.IsInBound(inputCoordinate) &&
+            bool isOwn = gameBoard.IsInBound(inputCoordinate) &&
                 gameBoard.Fields[inputCoordinate.Item1, inputCoordinate.Item2] != null &&
                 gameBoard.Fields[inputCoordinate.Item1, inputCoordinate.Item2].Color == player;
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
+            if (!isOwn)
+            {
+                return false;
+            }
+            else
+            {
+                Pawn movedPawn = gameBoard.Fields[inputCoordinate.Item1, inputCoordinate.Item2];
+                if (CanPlayerJump(player))
+                {
+                    if (!CanPawnJump(movedPawn))
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+                else if (CanPawnMove(movedPawn))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         private bool CheckForWinner()
         {
@@ -169,6 +193,32 @@ namespace yes_polish_draughts
             List<(int, int)> possibleJumps = PossibleJumps(pawn.Coordinates);
             return possibleJumps.Count != 0;
         }
+
+        private bool CanPawnMove(Pawn pawn)
+        {
+            List<(int, int)> possibleMoves = PossibleMoves(pawn);
+            return possibleMoves.Count != 0;
+        }
+
+        private List<(int, int)> PossibleMoves (Pawn pawn)
+        {
+            (int x, int y) coordinate = pawn.Coordinates;
+            List<(int, int)> result = new List<(int, int)>();
+            (int, int)[] possibleCoords = { ((player * 2 - 1), 1), ((player * 2 - 1), -1) };
+            foreach ((int row, int col) possibleCoord in possibleCoords)
+            {
+                (int, int) newCoord = (coordinate.x + possibleCoord.row, coordinate.y + possibleCoord.col);
+                Pawn? newField = gameBoard.Fields[newCoord.Item1, newCoord.Item2];
+                if (gameBoard.IsInBound(newCoord))
+                {
+                    if (newField == null)
+                    {
+                        result.Add(newCoord);
+                    }
+                }
+            }
+            return result;
+        }
         private bool CanPlayerJump(int player)
         {
             List<Pawn> playerPawns = gameBoard.GetPlayerPawns(player);
@@ -200,6 +250,37 @@ namespace yes_polish_draughts
                         result.Add(newCoord);
                     }
                 }
+            }
+            return result;
+        }
+        private void OutputCoords (List<(int, int)> coordinates)
+        {
+            string outputString = "";
+            foreach ((int x, int y) coordinate in coordinates)
+            {
+                outputString += (char)(coordinate.x + 'a');
+                outputString += coordinate.y + 1;
+                outputString += " ";
+            }
+            Console.WriteLine(outputString);
+        }
+
+        private List<(int, int)> StartPositionCoords(List<List<(int, int)>> sequences)
+        {
+            List<(int, int)> result = new List<(int, int)> ();
+            foreach (List<(int, int)> sequence in sequences)
+            {
+                result.Add(sequence[0]);
+            }
+            return result;
+        }
+
+        private List<(int, int)> EndPositionCoords(List<List<(int, int)>> sequences)
+        {
+            List<(int, int)> result = new List<(int, int)>();
+            foreach (List<(int, int)> sequence in sequences)
+            {
+                result.Add(sequence[sequence.Count - 1]);
             }
             return result;
         }
