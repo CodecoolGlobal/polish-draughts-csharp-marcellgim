@@ -36,19 +36,28 @@ namespace yes_polish_draughts
             Pawn? movedPawn = null;
             Console.Clear();
             Console.WriteLine(gameBoard);
+            List<List<(int x, int y)>> possibleSequences;
 
             if (CanPlayerJump(player))
             {
-                List<List<(int, int)>> possibleSeqences = PossibleJumpMoves();
+                possibleSequences = PossibleJumpMoves();
             }
-            
+            else
+            {
+                possibleSequences = AllPawnMoves(player);
+            }
+
+            List<(int,int)> possibleStarts = StartPositionCoords(possibleSequences);
+            Console.WriteLine("You can move the following pawns:");
+            OutputCoords(possibleStarts);
+
             while (!validStartCoordinate)
             {
                 Console.WriteLine("Enter coordinates for the piece you want to move:");
                 (int, int) inputCoordinate = GetCoordinateInput();
-                validStartCoordinate = ValidateStartCoordinate(inputCoordinate, player);
-                if (validStartCoordinate)
+                if (possibleStarts.Contains(inputCoordinate))
                 {
+                    validStartCoordinate = true;
                     validatedStartCoordinate = inputCoordinate;
                     movedPawn = gameBoard.Fields[validatedStartCoordinate.x, validatedStartCoordinate.y];
                 }
@@ -214,9 +223,9 @@ namespace yes_polish_draughts
             foreach ((int row, int col) possibleCoord in possibleCoords)
             {
                 (int, int) newCoord = (coordinate.x + possibleCoord.row, coordinate.y + possibleCoord.col);
-                Pawn? newField = gameBoard.Fields[newCoord.Item1, newCoord.Item2];
                 if (gameBoard.IsInBound(newCoord))
                 {
+                    Pawn? newField = gameBoard.Fields[newCoord.Item1, newCoord.Item2];
                     if (newField == null)
                     {
                         result.Add(newCoord);
@@ -236,6 +245,31 @@ namespace yes_polish_draughts
                 }
             }
             return false;
+        }
+        private bool CanPlayerMove(int player)
+        {
+            List<Pawn> playerPawns = gameBoard.Pawns[player];
+            foreach (Pawn pawn in playerPawns)
+            {
+                if (CanPawnMove(pawn))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        private List<List<(int, int)>> AllPawnMoves(int player)
+        {
+            List<Pawn> playerPawns = gameBoard.Pawns[player];
+            var allMoves = new List<List<(int, int)>>();
+            foreach (Pawn pawn in playerPawns)
+            {
+                if (CanPawnMove(pawn))
+                {
+                    allMoves.Add(PossibleMoves(pawn));
+                }
+            }
+            return allMoves;
         }
 
         private List<(int, int)> PossibleJumps((int x, int y) coordinate)
