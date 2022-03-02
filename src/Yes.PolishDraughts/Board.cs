@@ -85,7 +85,7 @@ namespace yes_polish_draughts
                     }
                     else
                     {
-                        boardString += ".";
+                        boardString += " ";
                     }
                     boardString += " ";
                 }
