@@ -14,6 +14,7 @@ namespace yes_polish_draughts
         {
             Color = color;
             Coordinates = coordinates;
+            IsCrowned = false;
         }
     }
 }
