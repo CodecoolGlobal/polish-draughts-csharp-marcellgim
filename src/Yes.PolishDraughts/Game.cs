@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace yes_polish_draughts
 {
@@ -57,7 +58,8 @@ namespace yes_polish_draughts
             while (!validStartCoordinate)
             {
                 Console.WriteLine("Enter coordinates for the piece you want to move:");
-                (int, int) inputCoordinate = GetCoordinateInput(possibleStarts.First());
+                int randomStart = new Random().Next(possibleStarts.Count);
+                (int, int) inputCoordinate = GetCoordinateInput(possibleStarts[randomStart]);
                 if (possibleStarts.Contains(inputCoordinate))
                 {
                     validStartCoordinate = true;
@@ -93,7 +95,8 @@ namespace yes_polish_draughts
             while (!validEndCoordinate)
             {
                 Console.WriteLine("Enter coordinates where you want to move that piece:");
-                (int, int) inputCoordinate = GetCoordinateInput(possibleEnds.First());
+                int randomEnd = new Random().Next(possibleEnds.Count);
+                (int, int) inputCoordinate = GetCoordinateInput(possibleEnds[randomEnd]);
                 if (possibleEnds.Contains(inputCoordinate))
                 {
                     validEndCoordinate = true;
