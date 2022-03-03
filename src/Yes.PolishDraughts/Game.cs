@@ -156,17 +156,17 @@ namespace yes_polish_draughts
             List<(int, int)> possibleJumps = PossibleJumps(startPosition);
             if (possibleJumps.Count > 0)
             {
-                List<(int, int)>[] runoffSequences = new List<(int, int)>[possibleJumps.Count];
+                List<List<(int, int)>> runoffSequences = new List<List<(int, int)>>();
                 for (int i = 0; i < possibleJumps.Count; i++)
                 {
                     if (!starterSequence.Contains(possibleJumps[i]))
                     {
                         List<(int, int)> newSequence = new List<(int, int)>(starterSequence);
                         newSequence.Add(possibleJumps[i]);
-                        runoffSequences[i] = LongestJumpSequence(newSequence);
+                        runoffSequences.Add(LongestJumpSequence(newSequence));
                     }
                 }
-                if (Array.TrueForAll(runoffSequences, sequence => sequence != null))
+                if (runoffSequences.Count > 0)
                     return runoffSequences.OrderByDescending(sequence => sequence.Count).First();
                 else
                     return starterSequence;
