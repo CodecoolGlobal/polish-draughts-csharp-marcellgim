@@ -13,6 +13,11 @@ namespace yes_polish_draughts
         int speed = 0;
         public void Start()
         {
+            newGame:
+            player = 0;
+            opponent = 1;
+            isAI = false;
+            speed = 0;
             int boardSize;
             string input;
             do
@@ -44,7 +49,7 @@ namespace yes_polish_draughts
                 } while (!int.TryParse(inputSpeedVersion, out speedVersion) || speedVersion > 1 || speedVersion < 0);
                 speed = speedVersion == 0 ? 500 : 10;
             }
-
+            
             gameBoard = new Board(boardSize);
             player = 0;
             do
@@ -55,8 +60,13 @@ namespace yes_polish_draughts
             Console.WriteLine(gameBoard.ToString(new List<(int, int)> { (-1, -1) }));
             string winner = opponent == 0 ? "White" : "Black";
             Console.WriteLine($"{winner} won the game!");
-            Console.WriteLine("Press Enter to quit");
-            Console.ReadLine();
+            Console.WriteLine("New game? (Y/N)");
+            string answer = Console.ReadLine() ?? String.Empty;
+            if (answer.ToLower() == "y")
+            {
+                Console.Clear();
+                goto newGame;
+            }
         }
         private void Round()
         {
