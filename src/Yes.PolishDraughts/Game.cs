@@ -57,7 +57,7 @@ namespace yes_polish_draughts
             while (!validStartCoordinate)
             {
                 Console.WriteLine("Enter coordinates for the piece you want to move:");
-                (int, int) inputCoordinate = GetCoordinateInput();
+                (int, int) inputCoordinate = GetCoordinateInput(possibleStarts.First());
                 if (possibleStarts.Contains(inputCoordinate))
                 {
                     validStartCoordinate = true;
@@ -93,7 +93,7 @@ namespace yes_polish_draughts
             while (!validEndCoordinate)
             {
                 Console.WriteLine("Enter coordinates where you want to move that piece:");
-                (int, int) inputCoordinate = GetCoordinateInput();
+                (int, int) inputCoordinate = GetCoordinateInput(possibleEnds.First());
                 if (possibleEnds.Contains(inputCoordinate))
                 {
                     validEndCoordinate = true;
@@ -120,7 +120,7 @@ namespace yes_polish_draughts
         {
             return !CanPlayerJump() && !CanPlayerMove();
         }
-        private (int, int) GetCoordinateInput()
+        private (int, int) GetCoordinateInput((int, int) possibleCoord)
         {
             (int, int)? coords = null;
             string input;
@@ -128,6 +128,9 @@ namespace yes_polish_draughts
             {
                 
                 input = Console.ReadLine() ?? String.Empty;
+                if (input == String.Empty) {
+                    return possibleCoord;
+                }
                 if (input.ToLower() == "quit")
                     Environment.Exit(0);
                 if (input.Length >= 2 && Char.IsLetter(input[0]) && int.TryParse(input.Substring(1), out _))
