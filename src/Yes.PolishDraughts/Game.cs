@@ -22,10 +22,10 @@ namespace yes_polish_draughts
             string input;
             do
             {
-                Console.WriteLine("Enter board size (10-20):");
+                Console.WriteLine("Enter board size (4-20):");
                 input = Console.ReadLine() ?? String.Empty;
 
-            } while (!int.TryParse(input, out boardSize) || boardSize > 20 || boardSize < 10);
+            } while (!int.TryParse(input, out boardSize) || boardSize > 20 || boardSize < 4);
             
             string inputVersion;
             int version;

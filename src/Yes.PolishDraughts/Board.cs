@@ -24,13 +24,14 @@ namespace yes_polish_draughts
                 {
                     if ((row + col) % 2 == 1)
                     {
-                        if (row < 4)
+                        int rowCount = size < 10 ? 1 : 4;
+                        if (row < rowCount)
                         {
                             Pawn newPawn = new Pawn(1, (row, col));
                             board[row, col] = newPawn;
                             Pawns[1].Add(newPawn);
                         }
-                        else if (row >= size - 4)
+                        else if (row >= size - rowCount)
                         {
                             Pawn newPawn = new Pawn(0, (row, col));
                             board[row, col] = newPawn;
