@@ -42,8 +42,9 @@ namespace yes_polish_draughts
             }
             return board;
         }
-        public override string ToString()
+        public string ToString(List<(int, int)>? possibleCoordinates)
         {
+            // ◆◇◌▒◔◕
             string boardString = "   ";
             char[] alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
             for (int col = 0; col < Fields.GetLength(1); col++)
@@ -75,17 +76,39 @@ namespace yes_polish_draughts
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
                         if (Fields[row, col].Color == 0)
                         {
-                            boardString += "●";
+                            if (possibleCoordinates.Contains((row, col)))
+                            {
+                                boardString += "◉";
+                            }
+                            else
+                            {
+                                boardString += "●";
+                            }
+                            
                         }
                         if (Fields[row, col].Color == 1)
                         {
-                            boardString += "○";
+                            if (possibleCoordinates.Contains((row, col)))
+                            {
+                                boardString += "◎";
+                            }
+                            else
+                            {
+                                boardString += "○";
+                            }
                         }
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                     }
                     else
                     {
-                        boardString += " ";
+                        if (possibleCoordinates.Contains((row, col)))
+                        {
+                            boardString += "◌";
+                        }
+                        else
+                        {
+                            boardString += " ";
+                        }
                     }
                     boardString += " ";
                 }

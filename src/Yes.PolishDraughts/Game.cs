@@ -34,8 +34,7 @@ namespace yes_polish_draughts
             (int x, int y) validatedStartCoordinate = (-1, -1);
             (int x, int y) validatedEndCoordinate = (-1, -1);
             Pawn? movedPawn = null;
-            Console.Clear();
-            Console.WriteLine(gameBoard);
+            
 
             List<(int, int)> possibleStarts;
             List<(int, int)> possibleEnds;
@@ -50,7 +49,8 @@ namespace yes_polish_draughts
             {
                 possibleStarts = AllMoveablePawnCoordinates();
             }
-
+            Console.Clear();
+            Console.WriteLine(gameBoard.ToString(possibleStarts));
             Console.WriteLine("You can move the following pawns:");
             OutputCoords(possibleStarts);
 
@@ -73,6 +73,8 @@ namespace yes_polish_draughts
                     (from sequence in possibleJumps
                     where sequence.First() == validatedStartCoordinate
                     select sequence.Last()).ToList();
+                Console.Clear();
+                Console.WriteLine(gameBoard.ToString(possibleEnds));
                 Console.WriteLine("You can jump with this pawn to:");
                 OutputCoords(possibleEnds);
             }
@@ -81,9 +83,12 @@ namespace yes_polish_draughts
 #pragma warning disable CS8604 // Possible null reference argument.
                 possibleEnds = PossibleMoves(movedPawn);
 #pragma warning restore CS8604 // Possible null reference argument.
+                Console.Clear();
+                Console.WriteLine(gameBoard.ToString(possibleEnds));
                 Console.WriteLine("You can move this pawn to:");
                 OutputCoords(possibleEnds);
             }
+            
 
             while (!validEndCoordinate)
             {
@@ -293,6 +298,7 @@ namespace yes_polish_draughts
             Pawn movedPawn = gameBoard.Fields[jumpSequence[0].x, jumpSequence[0].y];
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
             jumpSequence.RemoveAt(0);
+            bool firstJumpFinished = false;
             foreach ((int x, int y) jump in jumpSequence)
             {
 
@@ -313,10 +319,16 @@ namespace yes_polish_draughts
 #pragma warning disable CS8604 // Possible null reference argument.
                         gameBoard.RemovePawn(gameBoard.Fields[currentField.x, currentField.y]);
 #pragma warning restore CS8604 // Possible null reference argument.
+                        
                         break;
                     }
                 }
+                
                 gameBoard.MovePawn(movedPawn, jump);
+                if (firstJumpFinished) Thread.Sleep(1000);
+                firstJumpFinished = true;
+                Console.Clear();
+                Console.WriteLine(gameBoard);
             }
         }
         private List<List<(int x, int y)>> PossibleJumpMoves()
