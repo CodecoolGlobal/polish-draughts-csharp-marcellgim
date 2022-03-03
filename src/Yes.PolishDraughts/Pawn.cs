@@ -7,7 +7,7 @@ namespace yes_polish_draughts
     {
         public int Color { get; }
         public (int x, int y) Coordinates { get; set; }
-        public bool IsCrowned { get; private set; }
+        public bool IsCrowned { get; set; }
 
 
         public Pawn(int color, (int, int) coordinates)

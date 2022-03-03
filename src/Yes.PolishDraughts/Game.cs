@@ -10,6 +10,7 @@ namespace yes_polish_draughts
         private int player = 0;
         private int opponent = 1;
         private bool isAI = false;
+        int speed = 0;
         public void Start()
         {
             int boardSize;
@@ -30,6 +31,19 @@ namespace yes_polish_draughts
 
             } while (!int.TryParse(inputVersion, out version) || version > 1 || version < 0);
             if (version == 1) isAI = true;
+
+            if (isAI)
+            {
+                string inputSpeedVersion;
+                int speedVersion;
+                do
+                {
+                    Console.WriteLine("Enter speed:\n0 - Normal (2 steps/second)\n1 - Fast (100 steps/second)");
+                    inputSpeedVersion = Console.ReadLine() ?? String.Empty;
+
+                } while (!int.TryParse(inputSpeedVersion, out speedVersion) || speedVersion > 1 || speedVersion < 0);
+                speed = speedVersion == 0 ? 500 : 10;
+            }
 
             gameBoard = new Board(boardSize);
             player = 0;
@@ -170,7 +184,7 @@ namespace yes_polish_draughts
             {
                 if (isAI)
                 {
-                    Thread.Sleep(50);
+                    Thread.Sleep(speed);
                     return possibleCoord;
                 }
                 input = Console.ReadLine() ?? String.Empty;
@@ -353,7 +367,7 @@ namespace yes_polish_draughts
                 (int x, int y) moveVector = (jump.x - movedPawn.Coordinates.x, jump.y - movedPawn.Coordinates.y);
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
 #pragma warning restore IDE0042 // Deconstruct variable declaration
-                (int x, int y)unitVector = (moveVector.x / Math.Abs(moveVector.x), moveVector.y / Math.Abs(moveVector.y));
+                (int x, int y) unitVector = (moveVector.x / Math.Abs(moveVector.x), moveVector.y / Math.Abs(moveVector.y));
                 // Since all moves are perfectly diagonal, any dimension can be used to determine jump length
                 int jumpLength = Math.Abs(moveVector.x);
                 for (int move = 1; move < jumpLength; move++)
@@ -371,15 +385,17 @@ namespace yes_polish_draughts
                 }
                 
                 gameBoard.MovePawn(movedPawn, jump);
+                int pause = speed;
                 if (!isAI)
                 {
-                    if (firstJumpFinished) Thread.Sleep(1000);
-                    firstJumpFinished = true;
-                    Console.Clear();
-                    Console.WriteLine(gameBoard.ToString(new List<(int, int)> { (-1, -1) }));
+                    pause = 1000;
                 }
-                
+                if (firstJumpFinished) Thread.Sleep(pause);
+                firstJumpFinished = true;
+                Console.Clear();
+                Console.WriteLine(gameBoard.ToString(new List<(int, int)> { (-1, -1) }));
             }
+
         }
         private List<List<(int x, int y)>> PossibleJumpMoves()
         {

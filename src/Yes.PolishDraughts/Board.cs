@@ -78,11 +78,25 @@ namespace yes_polish_draughts
                         {
                             if (possibleCoordinates.Contains((row, col)))
                             {
-                                boardString += "◉";
+                                if (Fields[row, col].IsCrowned)
+                                {
+                                    boardString += "◈";
+                                }
+                                else
+                                {
+                                    boardString += "◉";
+                                }
                             }
                             else
                             {
-                                boardString += "●";
+                                if (Fields[row, col].IsCrowned)
+                                {
+                                    boardString += "◆";
+                                }
+                                else
+                                {
+                                    boardString += "●";
+                                }
                             }
                             
                         }
@@ -90,11 +104,25 @@ namespace yes_polish_draughts
                         {
                             if (possibleCoordinates.Contains((row, col)))
                             {
-                                boardString += "◎";
+                                if (Fields[row, col].IsCrowned)
+                                {
+                                    boardString += "⟐";
+                                }
+                                else
+                                {
+                                    boardString += "◎";
+                                }
                             }
                             else
                             {
-                                boardString += "○";
+                                if (Fields[row, col].IsCrowned)
+                                {
+                                    boardString += "◇";
+                                }
+                                else
+                                {
+                                    boardString += "○";
+                                }
                             }
                         }
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
@@ -152,6 +180,14 @@ namespace yes_polish_draughts
                     Fields[endPos.x, endPos.y] = movedPawn;
                     movedPawn.Coordinates = endPos;
                 }
+            }
+            if (movedPawn.Coordinates.x == 0 && movedPawn.Color == 0)
+            {
+                movedPawn.IsCrowned = true;
+            }
+            if (movedPawn.Coordinates.x == Fields.GetLength(0) - 1 && movedPawn.Color == 1)
+            {
+                movedPawn.IsCrowned = true;
             }
         }
         public bool IsInBound((int, int)inputCoordinate)
