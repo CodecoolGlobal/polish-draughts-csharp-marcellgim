@@ -115,6 +115,7 @@ namespace yes_polish_draughts
         public void RemovePawn(Pawn movedPawn)
         {
             Fields[movedPawn.Coordinates.x, movedPawn.Coordinates.y] = null;
+            Pawns[movedPawn.Color].Remove(movedPawn);
         }
         public void MovePawn(Pawn movedPawn, (int? x , int? y) endPosition)
         {
