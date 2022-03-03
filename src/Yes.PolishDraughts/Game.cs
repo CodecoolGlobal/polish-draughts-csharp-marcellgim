@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace yes_polish_draughts
 {
@@ -196,30 +195,34 @@ namespace yes_polish_draughts
             } while ( coords == null );
             return ((int, int))coords;
         }
-        private List<(int, int)> LongestJumpSequence(List<(int, int)> starterSequence)
+        private List<List<(int, int)>> LongestJumpSequence(List<(int, int)> starterSequence)
         {
             (int x, int y) startPosition = starterSequence.Last();
             List<(int, int)> possibleJumps = PossibleJumps(startPosition);
             if (possibleJumps.Count > 0)
             {
-                List<(int, int)>[] runoffSequences = new List<(int, int)>[possibleJumps.Count];
+                List<List<(int, int)>> runoffSequences = new List<List<(int, int)>>();
                 for (int i = 0; i < possibleJumps.Count; i++)
                 {
                     if (!starterSequence.Contains(possibleJumps[i]))
                     {
                         List<(int, int)> newSequence = new List<(int, int)>(starterSequence);
                         newSequence.Add(possibleJumps[i]);
-                        runoffSequences[i] = LongestJumpSequence(newSequence);
+                        List<List<(int, int)>> newJumps = LongestJumpSequence(newSequence);
+                        runoffSequences.AddRange(newJumps);
                     }
                 }
-                if (Array.TrueForAll(runoffSequences, sequence => sequence != null))
-                    return runoffSequences.OrderByDescending(sequence => sequence.Count).First();
+                if (runoffSequences.Count > 0)
+                    return
+                        (from sequence in runoffSequences
+                        where sequence.Count == runoffSequences.Max(sequence => sequence.Count)
+                        select sequence).ToList();
                 else
-                    return starterSequence;
+                    return new List<List<(int, int)>>() { starterSequence };
             }
             else
             {
-                return starterSequence;
+                return new List<List<(int, int)>>() { starterSequence };
             }
         }
         private bool CanPawnJump(Pawn pawn)
@@ -332,18 +335,9 @@ namespace yes_polish_draughts
             {
                 result.Add(sequence[0]);
             }
-            return result;
+            return result.Distinct().ToList();
         }
 
-        private List<(int, int)> EndPositionCoords(List<List<(int, int)>> sequences)
-        {
-            List<(int, int)> result = new List<(int, int)>();
-            foreach (List<(int, int)> sequence in sequences)
-            {
-                result.Add(sequence[sequence.Count - 1]);
-            }
-            return result;
-        }
         private void ExecuteJumpSequence(List<(int x, int y)> jumpSequence)
         {
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
@@ -394,7 +388,7 @@ namespace yes_polish_draughts
             {
                 if (CanPawnJump(pawn))
                 {
-                    longestSequences.Add(LongestJumpSequence(new List<(int, int)> { (pawn.Coordinates.x, pawn.Coordinates.y) }));
+                    longestSequences.AddRange(LongestJumpSequence(new List<(int, int)> { (pawn.Coordinates.x, pawn.Coordinates.y) }));
                 }
             }
             var validMoves =
