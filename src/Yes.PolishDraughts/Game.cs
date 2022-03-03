@@ -292,15 +292,6 @@ namespace yes_polish_draughts
             return result.Distinct().ToList();
         }
 
-        private List<(int, int)> EndPositionCoords(List<List<(int, int)>> sequences)
-        {
-            List<(int, int)> result = new List<(int, int)>();
-            foreach (List<(int, int)> sequence in sequences)
-            {
-                result.Add(sequence[sequence.Count - 1]);
-            }
-            return result;
-        }
         private void ExecuteJumpSequence(List<(int x, int y)> jumpSequence)
         {
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
