@@ -219,10 +219,10 @@ namespace yes_polish_draughts
             } while ( coords == null );
             return ((int, int))coords;
         }
-        private List<List<(int, int)>> LongestJumpSequence(List<(int, int)> starterSequence)
+        private List<List<(int, int)>> LongestJumpSequence(List<(int, int)> starterSequence, Pawn jumper)
         {
             (int x, int y) startPosition = starterSequence.Last();
-            List<(int, int)> possibleJumps = PossibleJumps(startPosition);
+            List<(int, int)> possibleJumps = PossibleJumps(startPosition, jumper);
             if (possibleJumps.Count > 0)
             {
                 List<List<(int, int)>> runoffSequences = new List<List<(int, int)>>();
@@ -232,7 +232,7 @@ namespace yes_polish_draughts
                     {
                         List<(int, int)> newSequence = new List<(int, int)>(starterSequence);
                         newSequence.Add(possibleJumps[i]);
-                        List<List<(int, int)>> newJumps = LongestJumpSequence(newSequence);
+                        List<List<(int, int)>> newJumps = LongestJumpSequence(newSequence, jumper);
                         runoffSequences.AddRange(newJumps);
                     }
                 }
@@ -251,7 +251,7 @@ namespace yes_polish_draughts
         }
         private bool CanPawnJump(Pawn pawn)
         {
-            List<(int, int)> possibleJumps = PossibleJumps(pawn.Coordinates);
+            List<(int, int)> possibleJumps = PossibleJumps(pawn.Coordinates, pawn);
             return possibleJumps.Count != 0;
         }
 
@@ -265,16 +265,39 @@ namespace yes_polish_draughts
         {
             (int x, int y) coordinate = pawn.Coordinates;
             List<(int, int)> result = new List<(int, int)>();
-            (int, int)[] possibleCoords = { ((player * 2 - 1), 1), ((player * 2 - 1), -1) };
-            foreach ((int row, int col) possibleCoord in possibleCoords)
+            if (!pawn.IsCrowned)
             {
-                (int, int) newCoord = (coordinate.x + possibleCoord.row, coordinate.y + possibleCoord.col);
-                if (gameBoard.IsInBound(newCoord))
+                (int, int)[] possibleCoords = { ((player * 2 - 1), 1), ((player * 2 - 1), -1) };
+                foreach ((int row, int col) possibleCoord in possibleCoords)
                 {
-                    Pawn? newField = gameBoard.Fields[newCoord.Item1, newCoord.Item2];
-                    if (newField == null)
+                    (int, int) newCoord = (coordinate.x + possibleCoord.row, coordinate.y + possibleCoord.col);
+                    if (gameBoard.IsInBound(newCoord))
                     {
-                        result.Add(newCoord);
+                        Pawn? newField = gameBoard.Fields[newCoord.Item1, newCoord.Item2];
+                        if (newField == null)
+                        {
+                            result.Add(newCoord);
+                        }
+                    }
+                } 
+            }
+            else
+            {
+                (int x, int y)[] unitVectors = { (-1, -1), (1, -1), (-1, 1), (1, 1) };
+                foreach ((int x, int y) vector in unitVectors)
+                {
+                    bool lineBlocked = false;
+                    for (int moves = 1; !lineBlocked; moves++)
+                    {
+                        (int x, int y) currentCoord = (coordinate.x + (moves * vector.x), coordinate.y + (moves * vector.y));
+                        if (!gameBoard.IsInBound(currentCoord))
+                            break;
+                        else if (gameBoard.Fields[currentCoord.x, currentCoord.y] is Pawn)
+                            lineBlocked = true;
+                        else if (gameBoard.Fields[currentCoord.x, currentCoord.y] == null)
+                        {
+                            result.Add(currentCoord);
+                        }
                     }
                 }
             }
@@ -318,22 +341,48 @@ namespace yes_polish_draughts
             return allMoveables;
         }
 
-        private List<(int, int)> PossibleJumps((int x, int y) coordinate)
+        private List<(int, int)> PossibleJumps((int x, int y) coordinate, Pawn jumper)
         {
             List<(int, int)> result = new List<(int, int)>();
-            (int, int)[] possibleCoords = { (-2, -2), (2, -2), (-2, 2), (2, 2)};
-            foreach ((int row, int col) possibleCoord in possibleCoords)
+            if (!jumper.IsCrowned)
             {
-                (int, int) newCoord = (coordinate.x + possibleCoord.row, coordinate.y + possibleCoord.col);
-                (int, int) newJumpedCoord = (coordinate.x + (possibleCoord.row / 2), coordinate.y + (possibleCoord.col / 2));
-                if (gameBoard.IsInBound(newCoord)) {
-                    Pawn? newjumpedField = gameBoard.Fields[newJumpedCoord.Item1, newJumpedCoord.Item2];
-                    Pawn? newField = gameBoard.Fields[newCoord.Item1, newCoord.Item2];
-                    if (newjumpedField != null &&
-                        newjumpedField.Color == opponent &&
-                        newField == null)
+                (int, int)[] possibleCoords = { (-2, -2), (2, -2), (-2, 2), (2, 2) };
+                foreach ((int row, int col) possibleCoord in possibleCoords)
+                {
+                    (int, int) newCoord = (coordinate.x + possibleCoord.row, coordinate.y + possibleCoord.col);
+                    (int, int) newJumpedCoord = (coordinate.x + (possibleCoord.row / 2), coordinate.y + (possibleCoord.col / 2));
+                    if (gameBoard.IsInBound(newCoord))
                     {
-                        result.Add(newCoord);
+                        Pawn? newjumpedField = gameBoard.Fields[newJumpedCoord.Item1, newJumpedCoord.Item2];
+                        Pawn? newField = gameBoard.Fields[newCoord.Item1, newCoord.Item2];
+                        if (newjumpedField != null &&
+                            newjumpedField.Color == opponent &&
+                            newField == null)
+                        {
+                            result.Add(newCoord);
+                        }
+                    }
+                } 
+            }
+            else
+            {
+                (int, int)[] unitVectors = { (-1, -1), (1, -1), (-1, 1), (1, 1) };
+                foreach ((int x, int y) vector in unitVectors)
+                {
+                    int pawnsEncountered = 0;
+                    for (int moves = 1; pawnsEncountered < 2; moves++)
+                    {
+                        (int x, int y) currentCoord = (jumper.Coordinates.x + (moves * vector.x), jumper.Coordinates.y + (moves * vector.y));
+                        if (!gameBoard.IsInBound(currentCoord))
+                            break;
+                        if (gameBoard.Fields[currentCoord.x, currentCoord.y] is Pawn)
+                        {
+                            pawnsEncountered++;
+                            if (gameBoard.Fields[currentCoord.x, currentCoord.y].Color == player)
+                                break;
+                        }
+                        if (pawnsEncountered == 1 && gameBoard.Fields[currentCoord.x, currentCoord.y] == null)
+                            result.Add(currentCoord);
                     }
                 }
             }
@@ -414,7 +463,7 @@ namespace yes_polish_draughts
             {
                 if (CanPawnJump(pawn))
                 {
-                    longestSequences.AddRange(LongestJumpSequence(new List<(int, int)> { (pawn.Coordinates.x, pawn.Coordinates.y) }));
+                    longestSequences.AddRange(LongestJumpSequence(new List<(int, int)> { (pawn.Coordinates.x, pawn.Coordinates.y) }, pawn));
                 }
             }
             var validMoves =
