@@ -10,6 +10,7 @@ namespace yes_polish_draughts
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         private int player = 0;
         private int opponent = 1;
+        private bool isAI = false;
         public void Start()
         {
             int boardSize;
@@ -20,6 +21,16 @@ namespace yes_polish_draughts
                 input = Console.ReadLine() ?? String.Empty;
 
             } while (!int.TryParse(input, out boardSize) || boardSize > 20 || boardSize < 10);
+            
+            string inputVersion;
+            int version;
+            do
+            {
+                Console.WriteLine("Enter version:\n0 - Normal (Human vs Human)\n1 - Demo (AI vs AI)");
+                inputVersion = Console.ReadLine() ?? String.Empty;
+
+            } while (!int.TryParse(inputVersion, out version) || version > 1 || version < 0);
+            if (version == 1) isAI = true;
 
             gameBoard = new Board(boardSize);
             player = 0;
@@ -27,9 +38,16 @@ namespace yes_polish_draughts
             {
                 Round();
             } while (!CheckForWinner());
+            Console.Clear();
+            Console.WriteLine(gameBoard.ToString(new List<(int, int)> { (-1, -1) }));
+            string winner = opponent == 0 ? "White" : "Black";
+            Console.WriteLine($"{winner} won the game!");
+            Console.WriteLine("Press Enter to quit");
+            Console.ReadLine();
         }
         private void Round()
         {
+            Undo:
             bool validStartCoordinate = false;
             bool validEndCoordinate = false;
             (int x, int y) validatedStartCoordinate = (-1, -1);
@@ -51,15 +69,27 @@ namespace yes_polish_draughts
                 possibleStarts = AllMoveablePawnCoordinates();
             }
             Console.Clear();
-            Console.WriteLine(gameBoard.ToString(possibleStarts));
-            Console.WriteLine("You can move the following pawns:");
-            OutputCoords(possibleStarts);
+            
+            if (!isAI)
+            {
+                Console.WriteLine(gameBoard.ToString(possibleStarts));
+                Console.WriteLine("You can move the following pawns:");
+                OutputCoords(possibleStarts);
+            }
+            else
+            {
+                Console.WriteLine(gameBoard.ToString(new List<(int, int)> { (-1, -1) }));
+            }
 
             while (!validStartCoordinate)
             {
-                Console.WriteLine("Enter coordinates for the piece you want to move:");
+                if (!isAI)
+                {
+                    Console.WriteLine("Enter coordinates for the piece you want to move:");
+                }
                 int randomStart = new Random().Next(possibleStarts.Count);
                 (int, int) inputCoordinate = GetCoordinateInput(possibleStarts[randomStart]);
+                if (inputCoordinate == (-1, -1)) goto Undo;
                 if (possibleStarts.Contains(inputCoordinate))
                 {
                     validStartCoordinate = true;
@@ -75,28 +105,38 @@ namespace yes_polish_draughts
                     (from sequence in possibleJumps
                     where sequence.First() == validatedStartCoordinate
                     select sequence.Last()).ToList();
-                Console.Clear();
-                Console.WriteLine(gameBoard.ToString(possibleEnds));
-                Console.WriteLine("You can jump with this pawn to:");
-                OutputCoords(possibleEnds);
+                if (!isAI)
+                {
+                    Console.Clear();
+                    Console.WriteLine(gameBoard.ToString(possibleEnds));
+                    Console.WriteLine("You can jump with this pawn to:");
+                    OutputCoords(possibleEnds);
+                }
             }
             else
             {
 #pragma warning disable CS8604 // Possible null reference argument.
                 possibleEnds = PossibleMoves(movedPawn);
 #pragma warning restore CS8604 // Possible null reference argument.
-                Console.Clear();
-                Console.WriteLine(gameBoard.ToString(possibleEnds));
-                Console.WriteLine("You can move this pawn to:");
-                OutputCoords(possibleEnds);
+                if (!isAI)
+                {
+                    Console.Clear();
+                    Console.WriteLine(gameBoard.ToString(possibleEnds));
+                    Console.WriteLine("You can move this pawn to:");
+                    OutputCoords(possibleEnds);
+                }
             }
             
 
             while (!validEndCoordinate)
             {
-                Console.WriteLine("Enter coordinates where you want to move that piece:");
+                if (!isAI)
+                {
+                    Console.WriteLine("Enter coordinates where you want to move that piece:");
+                }
                 int randomEnd = new Random().Next(possibleEnds.Count);
                 (int, int) inputCoordinate = GetCoordinateInput(possibleEnds[randomEnd]);
+                if (inputCoordinate == (-1, -1)) goto Undo;
                 if (possibleEnds.Contains(inputCoordinate))
                 {
                     validEndCoordinate = true;
@@ -110,7 +150,7 @@ namespace yes_polish_draughts
                         var chosenSequence =
                             (from sequence in possibleJumps
                             where sequence.Last() == validatedEndCoordinate
-                            select sequence).Single().ToList();
+                            select sequence).First().ToList();
                         ExecuteJumpSequence(chosenSequence);
                     }
                 }
@@ -129,13 +169,19 @@ namespace yes_polish_draughts
             string input;
             do
             {
-                
+                if (isAI)
+                {
+                    Thread.Sleep(50);
+                    return possibleCoord;
+                }
                 input = Console.ReadLine() ?? String.Empty;
                 if (input == String.Empty) {
                     return possibleCoord;
                 }
                 if (input.ToLower() == "quit")
                     Environment.Exit(0);
+                if (input.ToLower() == "undo")
+                    return (-1, -1);
                 if (input.Length >= 2 && Char.IsLetter(input[0]) && int.TryParse(input.Substring(1), out _))
                 {
                     int coorY = Char.ToLower(input[0]) - 'a';
@@ -331,10 +377,14 @@ namespace yes_polish_draughts
                 }
                 
                 gameBoard.MovePawn(movedPawn, jump);
-                if (firstJumpFinished) Thread.Sleep(1000);
-                firstJumpFinished = true;
-                Console.Clear();
-                Console.WriteLine(gameBoard.ToString(new List<(int, int)> { (-1, -1) }));
+                if (!isAI)
+                {
+                    if (firstJumpFinished) Thread.Sleep(1000);
+                    firstJumpFinished = true;
+                    Console.Clear();
+                    Console.WriteLine(gameBoard.ToString(new List<(int, int)> { (-1, -1) }));
+                }
+                
             }
         }
         private List<List<(int x, int y)>> PossibleJumpMoves()
