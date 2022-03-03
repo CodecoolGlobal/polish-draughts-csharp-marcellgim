@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace yes_polish_draughts
 {
@@ -150,7 +149,7 @@ namespace yes_polish_draughts
             } while ( coords == null );
             return ((int, int))coords;
         }
-        private List<(int, int)> LongestJumpSequence(List<(int, int)> starterSequence)
+        private List<List<(int, int)>> LongestJumpSequence(List<(int, int)> starterSequence)
         {
             (int x, int y) startPosition = starterSequence.Last();
             List<(int, int)> possibleJumps = PossibleJumps(startPosition);
@@ -163,17 +162,21 @@ namespace yes_polish_draughts
                     {
                         List<(int, int)> newSequence = new List<(int, int)>(starterSequence);
                         newSequence.Add(possibleJumps[i]);
-                        runoffSequences.Add(LongestJumpSequence(newSequence));
+                        List<List<(int, int)>> newJumps = LongestJumpSequence(newSequence);
+                        runoffSequences.AddRange(newJumps);
                     }
                 }
                 if (runoffSequences.Count > 0)
-                    return runoffSequences.OrderByDescending(sequence => sequence.Count).First();
+                    return
+                        (from sequence in runoffSequences
+                        where sequence.Count == runoffSequences.Max(sequence => sequence.Count)
+                        select sequence).ToList();
                 else
-                    return starterSequence;
+                    return new List<List<(int, int)>>() { starterSequence };
             }
             else
             {
-                return starterSequence;
+                return new List<List<(int, int)>>() { starterSequence };
             }
         }
         private bool CanPawnJump(Pawn pawn)
@@ -286,7 +289,7 @@ namespace yes_polish_draughts
             {
                 result.Add(sequence[0]);
             }
-            return result;
+            return result.Distinct().ToList();
         }
 
         private List<(int, int)> EndPositionCoords(List<List<(int, int)>> sequences)
@@ -344,7 +347,7 @@ namespace yes_polish_draughts
             {
                 if (CanPawnJump(pawn))
                 {
-                    longestSequences.Add(LongestJumpSequence(new List<(int, int)> { (pawn.Coordinates.x, pawn.Coordinates.y) }));
+                    longestSequences.AddRange(LongestJumpSequence(new List<(int, int)> { (pawn.Coordinates.x, pawn.Coordinates.y) }));
                 }
             }
             var validMoves =
