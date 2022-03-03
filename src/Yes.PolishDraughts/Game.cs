@@ -331,7 +331,7 @@ namespace yes_polish_draughts
                 if (firstJumpFinished) Thread.Sleep(1000);
                 firstJumpFinished = true;
                 Console.Clear();
-                Console.WriteLine(gameBoard);
+                Console.WriteLine(gameBoard.ToString(new List<(int, int)> { (-1, -1) }));
             }
         }
         private List<List<(int x, int y)>> PossibleJumpMoves()
